@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <main class="container st-principal">
+            <!-- Fragmento de búsqueda y filtros (HU-06) -->
+            <form method="get" th:action="@{/catalogo/listado}" class="mb-4">
+                <div class="input-group st-buscador mb-4">
+                    <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="search" name="texto" class="form-control" th:value="${texto}"
+                           th:placeholder="#{catalogo.buscar.placeholder}"/>
+                </div>
+                <div class="row g-3 align-items-end">
+                    <div class="col-12 col-md-3">
+                        <label class="form-label st-etiqueta" for="idCategoria">[[#{catalogo.categoria}]]</label>
+                        <select class="form-select st-lista" name="idCategoria" id="idCategoria">
+                            <option value="0" th:selected="${idCategoria == 0}">[[#{catalogo.todasCategorias}]]</option>
+                            <option th:each="c : ${categorias}" th:value="${c.idCategoria}"
+                                    th:text="${c.descripcion}" th:selected="${c.idCategoria == idCategoria}">Categoría</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label st-etiqueta" for="precio">[[#{catalogo.precio}]]</label>
+                        <select class="form-select st-lista" name="precio" id="precio">
+                            <option value="" th:selected="${precio == ''}">[[#{catalogo.todosPrecios}]]</option>
+                            <option value="0-1000" th:selected="${precio == '0-1000'}">[[#{catalogo.precio.r1}]]</option>
+                            <option value="1000-2500" th:selected="${precio == '1000-2500'}">[[#{catalogo.precio.r2}]]</option>
+                            <option value="2500-5000" th:selected="${precio == '2500-5000'}">[[#{catalogo.precio.r3}]]</option>
+                            <option value="5000-99999999" th:selected="${precio == '5000-99999999'}">[[#{catalogo.precio.r4}]]</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label st-etiqueta" for="marca">[[#{catalogo.marca}]]</label>
+                        <select class="form-select st-lista" name="marca" id="marca">
+                            <option value="" th:selected="${marca == ''}">[[#{catalogo.todasMarcas}]]</option>
+                            <option th:each="m : ${marcas}" th:value="${m}" th:text="${m}"
+                                    th:selected="${m == marca}">Marca</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3 d-grid">
+                        <button type="submit" class="btn st-boton-oscuro">
+                            <i class="fa-solid fa-magnifying-glass"></i> [[#{accion.buscar}]]
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <p class="st-total">[[#{catalogo.total}]]: <strong>[[${totalProductos}]]</strong></p>
+
+            <!-- Fragmento de listado de productos (HU-03) -->
+            <section class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4" th:if="${not #lists.isEmpty(productos)}">
+                <th:block th:each="p : ${productos}">
+                    <div class="col">
+                        <article th:replace="~{catalogo/fragmentos :: tarjeta(${p})}"></article>
+                    </div>
+                </th:block>
+            </section>
+            <div class="alert alert-light text-center" th:if="${#lists.isEmpty(productos)}">[[#{catalogo.vacio}]]</div>
+        </main>
+
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>

@@ -1,0 +1,9 @@
+# Maven / NetBeans / IDEs
+target/
+nbproject/private/
+.idea/
+*.iml
+.DS_Store
+
+# Llave privada de Firebase: NO se sube a GitHub (cada integrante la copia en su equipo)
+src/main/resources/firebase/*.json

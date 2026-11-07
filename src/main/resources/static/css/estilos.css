@@ -1,0 +1,246 @@
+/* Estilos de Super Tuanis. Colores tomados del wireframe. */
+:root {
+    --st-verde-oscuro: #0b5d45;
+    --st-verde: #11694f;
+    --st-menta: #88cbb4;
+    --st-menta-clara: #d9ede5;
+    --st-fondo: #f8fcfa;
+    --st-borde: #1f6b55;
+    --st-naranja: #f4845f;
+}
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    background-color: var(--st-fondo);
+    color: #1d2b26;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.st-principal {
+    flex: 1 0 auto;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+}
+
+/* Encabezado */
+.st-header {
+    background-color: var(--st-fondo);
+    border-bottom: 1px solid var(--st-borde);
+}
+
+.st-marca {
+    color: var(--st-verde-oscuro);
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.st-marca i {
+    color: #6b7280;
+    margin-right: .4rem;
+}
+
+.st-marca:hover {
+    color: var(--st-verde-oscuro);
+}
+
+.st-enlace {
+    color: var(--st-verde-oscuro);
+    font-weight: 500;
+    border-radius: 999px;
+    padding: .25rem 1rem !important;
+}
+
+.st-enlace.activo {
+    background-color: var(--st-menta);
+    border: 1px solid var(--st-borde);
+    font-weight: 700;
+}
+
+.st-enlace:hover {
+    color: var(--st-verde);
+}
+
+/* Textos */
+.st-titulo {
+    color: var(--st-verde-oscuro);
+    font-weight: 700;
+}
+
+.st-subtitulo {
+    font-size: 1.15rem;
+    font-weight: 500;
+}
+
+.st-presentacion {
+    margin-bottom: 1.5rem;
+}
+
+.st-seccion {
+    color: var(--st-verde-oscuro);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.st-etiqueta {
+    font-weight: 700;
+}
+
+.st-total {
+    color: var(--st-verde-oscuro);
+}
+
+/* Formularios y botones */
+.st-buscador .form-control,
+.st-buscador .input-group-text {
+    border-color: var(--st-borde);
+}
+
+.st-buscador {
+    border-radius: 999px;
+}
+
+.st-lista {
+    background-color: var(--st-menta);
+    border: 1px solid var(--st-borde);
+    font-weight: 600;
+}
+
+.st-boton {
+    background-color: var(--st-menta);
+    border: 1px solid var(--st-borde);
+    color: #000;
+    font-weight: 600;
+}
+
+.st-boton:hover:not(:disabled) {
+    background-color: #6fbca2;
+    border-color: var(--st-borde);
+    color: #000;
+}
+
+.st-boton:disabled {
+    background-color: #e5e7eb;
+    border-color: #cbd5d1;
+    color: #6b7280;
+}
+
+.st-boton-claro {
+    background-color: #fff;
+    border: 1px solid var(--st-borde);
+    color: #000;
+    font-weight: 600;
+}
+
+.st-boton-oscuro {
+    background-color: var(--st-verde);
+    border: 1px solid var(--st-verde);
+    color: #fff;
+    font-weight: 600;
+}
+
+.st-boton-oscuro:hover {
+    background-color: var(--st-verde-oscuro);
+    color: #fff;
+}
+
+/* Tarjetas de producto y de oferta */
+.st-tarjeta {
+    border: 1px solid #9db3ab;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+}
+
+.st-imagen {
+    align-items: center;
+    background-color: var(--st-menta-clara);
+    display: flex;
+    height: 190px;
+    justify-content: center;
+}
+
+.st-imagen img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+}
+
+.st-imagen i {
+    color: var(--st-verde);
+    font-size: 3rem;
+    opacity: .6;
+}
+
+.st-nombre {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: .15rem;
+}
+
+.st-marca-producto {
+    color: #5f6f69;
+    font-size: .85rem;
+    margin-bottom: .25rem;
+}
+
+.st-precio {
+    font-size: 1.1rem;
+    margin-bottom: .25rem;
+}
+
+.st-estado {
+    font-weight: 700;
+}
+
+.st-estado.disponible {
+    color: var(--st-verde);
+}
+
+.st-estado.ultimas {
+    color: var(--st-naranja);
+}
+
+.st-estado.agotado {
+    color: #b42318;
+}
+
+.st-oferta .st-antes,
+.st-oferta .st-ahora {
+    margin-bottom: .1rem;
+}
+
+.st-oferta .st-ahora strong {
+    font-size: 1.15rem;
+}
+
+.st-vigencia {
+    color: #5f6f69;
+    font-size: .85rem;
+}
+
+.st-descuento {
+    background-color: var(--st-naranja);
+    border-radius: 999px;
+    color: #fff;
+    font-weight: 700;
+    padding: .15rem .7rem;
+    position: absolute;
+    right: .75rem;
+    top: .75rem;
+    z-index: 1;
+}
+
+/* Pie de página */
+.st-footer {
+    background-color: var(--st-fondo);
+    border-top: 1px solid var(--st-borde);
+    flex-shrink: 0;
+    padding: .9rem 0;
+}

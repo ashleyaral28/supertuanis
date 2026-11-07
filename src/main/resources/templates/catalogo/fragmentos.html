@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <body>
+
+        <!-- Fragmento #1: etiqueta de disponibilidad (HU-07).
+             Agotado = 0 existencias, Últimas unidades = de 1 a 5, Disponible = más de 5. -->
+        <th:block th:fragment="estado(p)">
+            <span th:if="${p.existencias eq 0}" class="st-estado agotado">[[#{producto.estado.agotado}]]</span>
+            <span th:if="${p.existencias gt 0 and p.existencias le 5}" class="st-estado ultimas">[[#{producto.estado.ultimas}]]</span>
+            <span th:if="${p.existencias gt 5}" class="st-estado disponible">[[#{producto.estado.disponible}]]</span>
+        </th:block>
+
+        <!-- Fragmento #2: imagen del producto, o un ícono si todavía no tiene imagen -->
+        <div th:fragment="imagen(p)" class="st-imagen">
+            <img th:if="${p.rutaImagen != null and !#strings.isEmpty(p.rutaImagen)}"
+                 th:src="${p.rutaImagen}" th:alt="${p.descripcion}"/>
+            <i th:unless="${p.rutaImagen != null and !#strings.isEmpty(p.rutaImagen)}"
+               class="fa-solid fa-basket-shopping"></i>
+        </div>
+
+        <!-- Fragmento #3: botón Agregar. Envía el producto al carrito (pantalla de la persona B) -->
+        <form th:fragment="agregar(p)" method="post" class="mt-auto"
+              th:action="@{/carrito/agregar/{id}(id=${p.idProducto})}">
+            <button type="submit" class="btn st-boton w-100" th:disabled="${p.existencias eq 0}">
+                <i class="fa-solid fa-plus"></i> [[#{accion.agregar}]]
+            </button>
+        </form>
+
+        <!-- Fragmento #4: tarjeta de un producto (catálogo e inicio) -->
+        <article th:fragment="tarjeta(p)" class="card st-tarjeta h-100">
+            <div th:replace="~{catalogo/fragmentos :: imagen(${p})}"></div>
+            <div class="card-body d-flex flex-column">
+                <h2 class="st-nombre" th:text="${p.descripcion}">Producto</h2>
+                <p class="st-marca-producto" th:if="${p.marca != null}" th:text="${p.marca}">Marca</p>
+                <p class="st-precio">₡[[${#numbers.formatDecimal(p.precio, 1, 'POINT', 0, 'COMMA')}]]</p>
+                <p><th:block th:replace="~{catalogo/fragmentos :: estado(${p})}"></th:block></p>
+                <form th:replace="~{catalogo/fragmentos :: agregar(${p})}"></form>
+            </div>
+        </article>
+
+        <!-- Fragmento #5: tarjeta de una oferta (inicio y página de ofertas) -->
+        <article th:fragment="oferta(o)" class="card st-tarjeta st-oferta h-100">
+            <span class="st-descuento">-[[${o.porcentaje}]]%</span>
+            <div th:replace="~{catalogo/fragmentos :: imagen(${o.producto})}"></div>
+            <div class="card-body d-flex flex-column">
+                <h2 class="st-nombre" th:text="${o.producto.descripcion}">Producto</h2>
+                <p class="st-antes">[[#{oferta.antes}]]
+                    <s>₡[[${#numbers.formatDecimal(o.producto.precio, 1, 'POINT', 0, 'COMMA')}]] [[#{oferta.unidad}]]</s></p>
+                <p class="st-ahora">[[#{oferta.ahora}]]
+                    <strong>₡[[${#numbers.formatDecimal(o.precioOferta, 1, 'POINT', 0, 'COMMA')}]] [[#{oferta.unidad}]]</strong></p>
+                <p><th:block th:replace="~{catalogo/fragmentos :: estado(${o.producto})}"></th:block></p>
+                <p class="st-vigencia">[[#{oferta.vigente}]] [[${#temporals.format(o.fechaFin, 'dd/MM/yyyy')}]]</p>
+                <form th:replace="~{catalogo/fragmentos :: agregar(${o.producto})}"></form>
+            </div>
+        </article>
+
+    </body>
+</html>

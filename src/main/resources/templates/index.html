@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="~{general/fragmentos :: head}"></head>
+    <body>
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <main class="container st-principal">
+            <section class="text-center st-presentacion">
+                <h1 class="st-titulo">[[#{index.titulo}]]</h1>
+                <p class="st-subtitulo">[[#{index.subtitulo}]]</p>
+            </section>
+
+            <!-- Buscador y categorías -->
+            <section class="row g-3 justify-content-center align-items-center mb-4">
+                <form class="col-12 col-md-7" method="get" th:action="@{/catalogo/listado}">
+                    <div class="input-group st-buscador">
+                        <input type="search" name="texto" class="form-control"
+                               th:placeholder="#{catalogo.buscar.placeholder}"/>
+                        <button class="btn st-boton" type="submit" th:title="#{accion.buscar}">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+                </form>
+                <div class="col-12 col-md-3 dropdown">
+                    <button class="btn st-boton-claro dropdown-toggle w-100" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        [[#{index.categorias}]]
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li th:each="c : ${categorias}">
+                            <a class="dropdown-item" th:text="${c.descripcion}"
+                               th:href="@{/catalogo/listado(idCategoria=${c.idCategoria})}">Categoría</a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Más buscados -->
+            <section class="mb-5">
+                <h2 class="st-seccion">[[#{index.masBuscados}]]</h2>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4" th:if="${not #lists.isEmpty(masBuscados)}">
+                    <th:block th:each="p : ${masBuscados}">
+                        <div class="col">
+                            <article th:replace="~{catalogo/fragmentos :: tarjeta(${p})}"></article>
+                        </div>
+                    </th:block>
+                </div>
+                <div class="alert alert-light text-center" th:if="${#lists.isEmpty(masBuscados)}">[[#{lista.vacia}]]</div>
+            </section>
+
+            <!-- Oferta del día -->
+            <section class="mb-5">
+                <h2 class="st-seccion text-center">[[#{index.ofertaDia}]]</h2>
+                <div class="row justify-content-center" th:if="${ofertaDia != null}">
+                    <div class="col-12 col-sm-8 col-md-5 col-lg-4">
+                        <article th:replace="~{catalogo/fragmentos :: oferta(${ofertaDia})}"></article>
+                    </div>
+                </div>
+                <div class="alert alert-light text-center" th:if="${ofertaDia == null}">[[#{index.sinOferta}]]</div>
+            </section>
+        </main>
+
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+    </body>
+</html>
