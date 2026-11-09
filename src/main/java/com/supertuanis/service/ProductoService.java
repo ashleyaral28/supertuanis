@@ -19,16 +19,17 @@ public class ProductoService {
     private final ProductoRepository productoRepository;
     private final FirebaseStorageService firebaseStorageService;
 
-    // ---------------------------------------------------------------
-    // Métodos de la base (vienen de tienda, los usa el panel de administración)
-    // ---------------------------------------------------------------
+    // ===============================================================
+    // HU-11: administración de productos
+    // ===============================================================
+
     @Transactional(readOnly = true)
-    public List<Producto> getProductos(boolean activo) {
-        if (activo) {
+    public List<Producto> getProductos(boolean soloActivos) {
+        if (soloActivos) {
             return productoRepository.findByActivoTrue();
-        } else {
-            return productoRepository.findAll();
         }
+
+        return productoRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -37,52 +38,139 @@ public class ProductoService {
     }
 
     @Transactional
-    public void save(Producto producto, MultipartFile imagenFile) {
-        producto = productoRepository.save(producto);
-        if (!imagenFile.isEmpty()) { //Si no está vacío... pasaron una imagen...            
-            try {
-                String rutaImagen = firebaseStorageService.uploadImage(
-                        imagenFile, "producto",
-                        producto.getIdProducto());
-                producto.setRutaImagen(rutaImagen);
-                productoRepository.save(producto);
-            } catch (IOException e) {
+    public void save(
+            Producto producto,
+            MultipartFile imagenFile
+    ) {
 
+        // Conserva la imagen anterior cuando se modifica un producto
+        // sin seleccionar una imagen nueva.
+        if (producto.getIdProducto() != null
+                && (producto.getRutaImagen() == null
+                || producto.getRutaImagen().isBlank())) {
+
+            productoRepository.findById(producto.getIdProducto())
+                    .ifPresent(productoAnterior
+                            -> producto.setRutaImagen(
+                                    productoAnterior.getRutaImagen()
+                            ));
+        }
+
+        Producto productoGuardado
+                = productoRepository.save(producto);
+
+        if (imagenFile != null && !imagenFile.isEmpty()) {
+            try {
+                String rutaImagen
+                        = firebaseStorageService.uploadImage(
+                                imagenFile,
+                                "producto",
+                                productoGuardado.getIdProducto()
+                        );
+
+                productoGuardado.setRutaImagen(rutaImagen);
+                productoRepository.save(productoGuardado);
+
+            } catch (IOException e) {
+                throw new IllegalStateException(
+                        "No se pudo guardar la imagen del producto.",
+                        e
+                );
             }
         }
     }
 
     @Transactional
     public void delete(Integer idProducto) {
-        // Verifica si el producto existe antes de intentar eliminarlo
+
         if (!productoRepository.existsById(idProducto)) {
-            throw new IllegalArgumentException("El producto con ID " + idProducto + " no existe.");
+            throw new IllegalArgumentException(
+                    "El producto con ID "
+                    + idProducto
+                    + " no existe."
+            );
         }
+
         try {
             productoRepository.deleteById(idProducto);
+
         } catch (DataIntegrityViolationException e) {
-            // Lanza una nueva excepción para encapsular el problema de integridad de datos
-            throw new IllegalStateException("No se puede eliminar el producto. Tiene datos asociados.", e);
+            throw new IllegalStateException(
+                    "No se puede eliminar el producto "
+                    + "porque tiene datos asociados.",
+                    e
+            );
         }
     }
 
-    // ---------------------------------------------------------------
-    // Catálogo (HU-03, HU-06 y HU-07)
-    // ---------------------------------------------------------------
+    // ===============================================================
+    // HU-12: control de inventario
+    // ===============================================================
+
+    @Transactional(readOnly = true)
+    public List<Producto> getInventarioBajo(Integer limite) {
+        return productoRepository
+                .findByExistenciasLessThanEqualOrderByExistenciasAsc(
+                        limite
+                );
+    }
+
+    @Transactional
+    public void actualizarExistencias(
+            Integer idProducto,
+            Integer existencias
+    ) {
+
+        if (existencias == null || existencias < 0) {
+            throw new IllegalArgumentException(
+                    "Las existencias no pueden ser negativas."
+            );
+        }
+
+        Producto producto = productoRepository
+                .findById(idProducto)
+                .orElseThrow(() -> new IllegalArgumentException(
+                "El producto con ID "
+                + idProducto
+                + " no existe."
+        ));
+
+        producto.setExistencias(existencias);
+        productoRepository.save(producto);
+    }
+
+    // ===============================================================
+    // HU-03, HU-06 y HU-07: catálogo
+    // ===============================================================
+
     @Transactional(readOnly = true)
     public List<Producto> getMasBuscados() {
-        return productoRepository.findTop4ByActivoTrueAndExistenciasGreaterThanOrderByIdProductoAsc(0);
+        return productoRepository
+                .findTop4ByActivoTrueAndExistenciasGreaterThanOrderByIdProductoAsc(
+                        0
+                );
     }
 
     @Transactional(readOnly = true)
-    public List<Producto> buscar(String texto, Integer idCategoria, String marca,
-            BigDecimal precioMin, BigDecimal precioMax) {
-        return productoRepository.buscar(texto, idCategoria, marca, precioMin, precioMax);
+    public List<Producto> buscar(
+            String texto,
+            Integer idCategoria,
+            String marca,
+            BigDecimal precioMin,
+            BigDecimal precioMax
+    ) {
+
+        return productoRepository.buscar(
+                texto,
+                idCategoria,
+                marca,
+                precioMin,
+                precioMax
+        );
     }
 
     @Transactional(readOnly = true)
     public List<String> getMarcas() {
         return productoRepository.findMarcas();
     }
-
 }

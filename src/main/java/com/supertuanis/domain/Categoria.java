@@ -7,7 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,18 +28,23 @@ public class Categoria implements Serializable {
     @Column(name = "id_categoria")
     private Integer idCategoria;
 
-    @Column(unique = true, nullable = false, length = 50)
+    @NotBlank(message = "La descripción no puede estar vacía")
+    @Size(max = 50)
+    @Column(
+            nullable = false,
+            unique = true,
+            length = 50
+    )
     private String descripcion;
 
-    @Column(length = 1024)
+    @Size(max = 1024)
+    @Column(name = "ruta_imagen", length = 1024)
     private String rutaImagen;
 
-    @Column(name = "activo")
     private boolean activo;
 
     @OneToMany(mappedBy = "categoria")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<Producto> productos;
-
+    private List<Producto> productos = new ArrayList<>();
 }
