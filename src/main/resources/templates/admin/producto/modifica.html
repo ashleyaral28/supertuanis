@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+    <head th:replace="~{general/fragmentos :: head}"></head>
+
+    <body>
+
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <main class="container st-principal">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-warning">
+
+                    <h1 class="h4 m-0"
+                        th:text="#{admin.productos.modificar}">
+                        Modificar producto
+                    </h1>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form th:action="@{/admin/productos/guardar}"
+                          th:object="${producto}"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        <input type="hidden"
+                               th:field="*{idProducto}"/>
+
+                        <input type="hidden"
+                               th:field="*{rutaImagen}"/>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label"
+                                       for="descripcion"
+                                       th:text="#{admin.productos.nombre}">
+                                    Nombre
+                                </label>
+
+                                <input type="text"
+                                       id="descripcion"
+                                       class="form-control"
+                                       th:field="*{descripcion}"
+                                       maxlength="50"
+                                       required="required"/>
+
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('descripcion')}"
+                                     th:errors="*{descripcion}">
+                                    Error
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label"
+                                       for="marca"
+                                       th:text="#{admin.productos.marca}">
+                                    Marca
+                                </label>
+
+                                <input type="text"
+                                       id="marca"
+                                       class="form-control"
+                                       th:field="*{marca}"
+                                       maxlength="50"/>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label"
+                                       for="categoria"
+                                       th:text="#{admin.productos.categoria}">
+                                    Categoría
+                                </label>
+
+                                <select id="categoria"
+                                        class="form-select"
+                                        th:field="*{categoria.idCategoria}"
+                                        required="required">
+
+                                    <option value="">
+                                        Seleccione una categoría
+                                    </option>
+
+                                    <option th:each="c : ${categorias}"
+                                            th:value="${c.idCategoria}"
+                                            th:text="${c.descripcion}">
+                                        Categoría
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <label class="form-label"
+                                       for="precio"
+                                       th:text="#{admin.productos.precio}">
+                                    Precio
+                                </label>
+
+                                <input type="number"
+                                       id="precio"
+                                       class="form-control"
+                                       th:field="*{precio}"
+                                       min="0.01"
+                                       step="0.01"
+                                       required="required"/>
+
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('precio')}"
+                                     th:errors="*{precio}">
+                                    Error
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <label class="form-label"
+                                       for="existencias"
+                                       th:text="#{admin.productos.existencias}">
+                                    Existencias
+                                </label>
+
+                                <input type="number"
+                                       id="existencias"
+                                       class="form-control"
+                                       th:field="*{existencias}"
+                                       min="0"
+                                       required="required"/>
+
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('existencias')}"
+                                     th:errors="*{existencias}">
+                                    Error
+                                </div>
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <label class="form-label"
+                                       for="detalle"
+                                       th:text="#{admin.productos.detalle}">
+                                    Descripción
+                                </label>
+
+                                <textarea id="detalle"
+                                          class="form-control"
+                                          th:field="*{detalle}"
+                                          rows="4">
+                                </textarea>
+
+                            </div>
+
+                            <div class="col-md-8">
+
+                                <label class="form-label"
+                                       for="imagenFile"
+                                       th:text="#{admin.productos.imagen}">
+                                    Imagen
+                                </label>
+
+                                <input type="file"
+                                       id="imagenFile"
+                                       name="imagenFile"
+                                       class="form-control"
+                                       accept="image/*"/>
+
+                                <small class="text-muted">
+                                    Deje este campo vacío para conservar
+                                    la imagen actual.
+                                </small>
+
+                            </div>
+
+                            <div class="col-md-4 text-center"
+                                 th:if="${producto.rutaImagen != null
+                                 and !producto.rutaImagen.isBlank()}">
+
+                                <p class="mb-2">Imagen actual</p>
+
+                                <img th:src="${producto.rutaImagen}"
+                                     th:alt="${producto.descripcion}"
+                                     class="img-fluid border rounded"
+                                     style="max-height: 150px;"/>
+
+                            </div>
+
+                            <div class="col-12">
+
+                                <div class="form-check">
+
+                                    <input type="checkbox"
+                                           id="activo"
+                                           class="form-check-input"
+                                           th:field="*{activo}"/>
+
+                                    <label for="activo"
+                                           class="form-check-label"
+                                           th:text="#{admin.productos.activo}">
+                                        Activo
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex justify-content-end
+                             gap-2 mt-4">
+
+                            <a th:href="@{/admin/productos/listado}"
+                               class="btn btn-secondary">
+
+                                <i class="fa-solid fa-arrow-left"></i>
+
+                                <span th:text="#{accion.regresar}">
+                                    Regresar
+                                </span>
+
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-success">
+
+                                <i class="fa-solid fa-floppy-disk"></i>
+
+                                <span th:text="#{accion.guardar}">
+                                    Guardar
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </main>
+
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+
+    </body>
+</html>

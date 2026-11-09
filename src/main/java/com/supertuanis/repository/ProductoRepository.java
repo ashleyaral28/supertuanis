@@ -9,30 +9,56 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductoRepository extends JpaRepository<Producto, Integer> {
+public interface ProductoRepository
+        extends JpaRepository<Producto, Integer> {
 
+    // Recupera únicamente los productos activos
     public List<Producto> findByActivoTrue();
 
-    // Consulta derivada: los 4 primeros productos activos que tienen existencias (tarjetas de "Más buscados")
-    public List<Producto> findTop4ByActivoTrueAndExistenciasGreaterThanOrderByIdProductoAsc(Integer existencias);
+    // HU-12: productos con existencias bajas,
+    // ordenados de menor a mayor cantidad
+    public List<Producto>
+            findByExistenciasLessThanEqualOrderByExistenciasAsc(
+                    Integer limite
+            );
 
-    // Consulta jpql del catálogo (HU-06). Todos los filtros llegan siempre con valor:
-    // texto vacío = cualquier nombre, idCategoria 0 = todas, marca vacía = todas.
-    // El precio es un rango: precioMin incluido y precioMax excluido.
-    @Query("SELECT p FROM Producto p WHERE p.activo = true "
-            + "AND LOWER(p.descripcion) LIKE LOWER(CONCAT('%', :texto, '%')) "
-            + "AND (:idCategoria = 0 OR p.categoria.idCategoria = :idCategoria) "
-            + "AND (:marca = '' OR p.marca = :marca) "
-            + "AND p.precio >= :precioMin AND p.precio < :precioMax "
-            + "ORDER BY p.descripcion ASC")
-    List<Producto> buscar(@Param("texto") String texto,
+    // Recupera los primeros cuatro productos activos
+    // que todavía tienen existencias
+    public List<Producto>
+            findTop4ByActivoTrueAndExistenciasGreaterThanOrderByIdProductoAsc(
+                    Integer existencias
+            );
+
+    // HU-06: búsqueda y filtrado del catálogo
+    @Query("""
+           SELECT p
+           FROM Producto p
+           WHERE p.activo = true
+           AND LOWER(p.descripcion)
+               LIKE LOWER(CONCAT('%', :texto, '%'))
+           AND (:idCategoria = 0
+               OR p.categoria.idCategoria = :idCategoria)
+           AND (:marca = ''
+               OR p.marca = :marca)
+           AND p.precio >= :precioMin
+           AND p.precio < :precioMax
+           ORDER BY p.descripcion ASC
+           """)
+    public List<Producto> buscar(
+            @Param("texto") String texto,
             @Param("idCategoria") Integer idCategoria,
             @Param("marca") String marca,
             @Param("precioMin") BigDecimal precioMin,
-            @Param("precioMax") BigDecimal precioMax);
+            @Param("precioMax") BigDecimal precioMax
+    );
 
-    // Consulta jpql con las marcas que existen, para llenar la lista desplegable de marcas
-    @Query("SELECT DISTINCT p.marca FROM Producto p WHERE p.activo = true AND p.marca IS NOT NULL ORDER BY p.marca")
-    List<String> findMarcas();
-
+    // Recupera las marcas disponibles para el filtro
+    @Query("""
+           SELECT DISTINCT p.marca
+           FROM Producto p
+           WHERE p.activo = true
+           AND p.marca IS NOT NULL
+           ORDER BY p.marca
+           """)
+    public List<String> findMarcas();
 }

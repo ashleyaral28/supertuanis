@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+    <head th:replace="~{general/fragmentos :: head}"></head>
+
+    <body>
+
+        <header th:replace="~{general/fragmentos :: header}"></header>
+
+        <main class="container st-principal">
+
+            <div class="mb-4">
+
+                <h1 th:text="#{admin.inventario.titulo}">
+                    Control de inventario
+                </h1>
+
+                <p class="text-muted"
+                   th:text="#{admin.inventario.subtitulo}">
+                    Actualice las existencias de los productos
+                </p>
+
+            </div>
+
+            <div class="alert alert-warning"
+                 th:if="${totalInventarioBajo > 0}">
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                <span th:text="#{admin.inventario.alerta}">
+                    Productos con inventario bajo
+                </span>:
+
+                <strong th:text="${totalInventarioBajo}">
+                    0
+                </strong>
+
+                <span>
+                    (5 unidades o menos)
+                </span>
+
+            </div>
+
+            <div class="alert alert-success"
+                 th:if="${totalInventarioBajo == 0}">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                No hay productos con inventario bajo.
+
+            </div>
+
+            <div class="table-responsive"
+                 th:if="${!#lists.isEmpty(productos)}">
+
+                <table class="table table-striped
+                       table-hover align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th th:text="#{admin.inventario.producto}">
+                                Producto
+                            </th>
+
+                            <th th:text="#{admin.inventario.categoria}">
+                                Categoría
+                            </th>
+
+                            <th th:text="#{admin.inventario.existencias}">
+                                Existencias
+                            </th>
+
+                            <th th:text="#{admin.inventario.estado}">
+                                Estado
+                            </th>
+
+                            <th th:text="#{admin.inventario.acciones}">
+                                Acciones
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr th:each="p : ${productos}"
+                            th:classappend="${p.existencias == 0}
+                            ? 'table-danger'
+                            : (${p.existencias <= limiteInventarioBajo}
+                            ? 'table-warning'
+                            : '')">
+
+                            <td>
+
+                                <strong th:text="${p.descripcion}">
+                                    Producto
+                                </strong>
+
+                                <br/>
+
+                                <small class="text-muted"
+                                       th:text="${p.marca}">
+                                    Marca
+                                </small>
+
+                            </td>
+
+                            <td th:text="${p.categoria != null
+                                ? p.categoria.descripcion
+                                : '-'}">
+                                Categoría
+                            </td>
+
+                            <td>
+
+                                <span class="fs-5 fw-bold"
+                                      th:text="${p.existencias}">
+                                    0
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span th:if="${p.existencias == 0}"
+                                      class="badge text-bg-danger"
+                                      th:text="#{admin.inventario.agotado}">
+                                    Agotado
+                                </span>
+
+                                <span th:if="${p.existencias > 0
+                                      and p.existencias
+                                      <= limiteInventarioBajo}"
+                                      class="badge text-bg-warning"
+                                      th:text="#{admin.inventario.bajo}">
+                                    Inventario bajo
+                                </span>
+
+                                <span th:if="${p.existencias
+                                      > limiteInventarioBajo}"
+                                      class="badge text-bg-success"
+                                      th:text="#{admin.inventario.disponible}">
+                                    Disponible
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <form th:action="@{/admin/inventario/actualizar}"
+                                      method="post"
+                                      class="d-flex gap-2">
+
+                                    <input type="hidden"
+                                           name="idProducto"
+                                           th:value="${p.idProducto}"/>
+
+                                    <input type="number"
+                                           name="existencias"
+                                           class="form-control"
+                                           style="max-width: 110px;"
+                                           th:value="${p.existencias}"
+                                           min="0"
+                                           required="required"/>
+
+                                    <button type="submit"
+                                            class="btn btn-primary">
+
+                                        <i class="fa-solid fa-rotate"></i>
+
+                                        <span th:text="#{admin.inventario.actualizar}">
+                                            Actualizar
+                                        </span>
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="alert alert-info text-center"
+                 th:if="${#lists.isEmpty(productos)}"
+                 th:text="#{admin.inventario.vacio}">
+
+                No hay productos registrados
+
+            </div>
+
+            <div class="mt-4">
+
+                <a th:href="@{/admin/productos/listado}"
+                   class="btn btn-secondary">
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                    Ir a administración de productos
+
+                </a>
+
+            </div>
+
+        </main>
+
+        <section th:replace="~{general/fragmentos :: mostrarToast}">
+        </section>
+
+        <footer th:replace="~{general/fragmentos :: footer}"></footer>
+
+    </body>
+</html>

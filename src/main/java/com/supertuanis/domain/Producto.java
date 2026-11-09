@@ -28,38 +28,45 @@ public class Producto implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_producto")
     private Integer idProducto;
 
-    // En Super Tuanis la descripcion es el nombre del producto (ej. "Leche entera 1 L")
-    @Column(nullable = false, length = 50)
-    @NotBlank(message = "La descripcion no puede estar vacia")
-    @Size(max = 50, message = "La descripcion no puede tener mas de 50 caracteres")
+    @NotBlank(message = "El nombre del producto no puede estar vacío")
+    @Size(max = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String descripcion;
 
+    @Size(max = 50)
     @Column(length = 50)
-    @Size(max = 50, message = "La marca no puede tener mas de 50 caracteres")
     private String marca;
 
     @Column(columnDefinition = "TEXT")
     private String detalle;
 
+    @NotNull(message = "El precio no puede estar vacío")
+    @DecimalMin(
+            value = "0.01",
+            message = "El precio debe ser mayor a cero"
+    )
     @Column(precision = 12, scale = 2)
-    @NotNull(message = "El precio no puede estar vacio")
-    @DecimalMin(value = "0.01", inclusive = true, message = "El precio debe ser mayor a 0")
     private BigDecimal precio;
 
-    @NotNull(message = "Las existencias no pueden estar vacias")
-    @Min(value = 0, message = "Las existencias deben ser mayor o igual a 0")
+    @NotNull(message = "Las existencias no pueden estar vacías")
+    @Min(
+            value = 0,
+            message = "Las existencias no pueden ser negativas"
+    )
     private Integer existencias;
 
-    @Column(length = 1024)
     @Size(max = 1024)
+    @Column(name = "ruta_imagen", length = 1024)
     private String rutaImagen;
 
     private boolean activo;
 
+    @NotNull(message = "Debe seleccionar una categoría")
     @ManyToOne
-    @JoinColumn(name = "id_categoria")
+    @JoinColumn(name = "id_categoria", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Categoria categoria;
