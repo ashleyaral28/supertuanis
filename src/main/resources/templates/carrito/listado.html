@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{general/fragmentos :: head}">
+</head>
+
+<body>
+
+<header th:replace="~{general/fragmentos :: header}">
+</header>
+
+<main class="container st-principal">
+
+    <h1 class="mb-4">
+        Carrito de Compras
+    </h1>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>Subtotal</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr th:each="item : ${items}">
+
+                            <td th:text="${item.producto.descripcion}"></td>
+
+                            <td th:text="${item.cantidad}"></td>
+
+                            <td>
+                                ₡<span th:text="${item.producto.precio}"></span>
+                            </td>
+
+                            <td>
+                                ₡<span th:text="${item.subtotal}"></span>
+                            </td>
+
+                            <td>
+                                <a class="btn btn-danger btn-sm"
+                                   th:href="@{/carrito/eliminar/{id}(id=${item.producto.idProducto})}">
+                                    Eliminar
+                                </a>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <hr>
+
+            <div class="text-end mb-4">
+
+                <h3>
+                    Total:
+                    ₡<span th:text="${total}"></span>
+                </h3>
+
+            </div>
+
+            <form th:action="@{/compra/confirmar}"
+                  method="post">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Método de entrega
+                        </label>
+
+                        <select name="metodoEntrega"
+                                class="form-select">
+
+                            <option value="DOMICILIO">
+                                Entrega a domicilio
+                            </option>
+
+                            <option value="RETIRO">
+                                Retiro en supermercado
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Método de pago
+                        </label>
+
+                        <select name="metodoPago"
+                                class="form-select">
+
+                            <option value="SINPE">
+                                SINPE
+                            </option>
+
+                            <option value="TARJETA">
+                                Tarjeta
+                            </option>
+
+                            <option value="EFECTIVO">
+                                Efectivo
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+
+                    <button type="submit"
+                            class="btn st-boton">
+
+                        Confirmar Compra
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
+
+<footer th:replace="~{general/fragmentos :: footer}">
+</footer>
+
+</body>
+</html>

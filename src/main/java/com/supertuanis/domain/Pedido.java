@@ -1,3 +1,4 @@
+
 package com.supertuanis.domain;
 
 import jakarta.persistence.Column;

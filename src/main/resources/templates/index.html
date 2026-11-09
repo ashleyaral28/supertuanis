@@ -9,6 +9,14 @@
             <section class="text-center st-presentacion">
                 <h1 class="st-titulo">[[#{index.titulo}]]</h1>
                 <p class="st-subtitulo">[[#{index.subtitulo}]]</p>
+                <div th:if="${mensajeCompra}"
+                     class="alert alert-success text-center mb-4">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                    <span th:text="${mensajeCompra}"></span>
+
+                </div>
             </section>
 
             <!-- Buscador y categorías -->

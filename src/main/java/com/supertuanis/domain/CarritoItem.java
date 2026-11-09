@@ -1,3 +1,4 @@
+
 package com.supertuanis.domain;
 
 import jakarta.persistence.Entity;
@@ -42,7 +43,6 @@ public class CarritoItem implements Serializable {
         if (producto == null
                 || producto.getPrecio() == null
                 || cantidad == null) {
-
             return BigDecimal.ZERO;
         }
 

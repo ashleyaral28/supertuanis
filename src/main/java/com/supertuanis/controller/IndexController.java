@@ -6,6 +6,7 @@ import com.supertuanis.service.PromocionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class IndexController {
@@ -14,20 +15,37 @@ public class IndexController {
     private final CategoriaService categoriaService;
     private final PromocionService promocionService;
 
-    public IndexController(ProductoService productoService, CategoriaService categoriaService,
+    public IndexController(
+            ProductoService productoService,
+            CategoriaService categoriaService,
             PromocionService promocionService) {
+
         this.productoService = productoService;
         this.categoriaService = categoriaService;
         this.promocionService = promocionService;
     }
 
     @GetMapping("/")
-    public String inicio(Model model) {
+    public String inicio(
+            @RequestParam(required = false) String compra,
+            Model model) {
+
         model.addAttribute("activa", "inicio");
-        model.addAttribute("masBuscados", productoService.getMasBuscados());
-        model.addAttribute("categorias", categoriaService.getCategorias(true));
-        model.addAttribute("ofertaDia", promocionService.getOfertaDelDia().orElse(null));
+        model.addAttribute("masBuscados",
+                productoService.getMasBuscados());
+
+        model.addAttribute("categorias",
+                categoriaService.getCategorias(true));
+
+        model.addAttribute("ofertaDia",
+                promocionService.getOfertaDelDia().orElse(null));
+
+        if ("ok".equals(compra)) {
+            model.addAttribute(
+                    "mensajeCompra",
+                    "Pedido confirmado correctamente");
+        }
+
         return "/index";
     }
-
 }
